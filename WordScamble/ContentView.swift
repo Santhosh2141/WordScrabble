@@ -103,6 +103,7 @@ struct ContentView: View {
                 return
             }
         }
+        
         fatalError("Could not load any word from the bundle.")
     }
     
