@@ -16,10 +16,21 @@ struct ContentView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingMsg = false
+    @State private var score = 0
+    @State private var noOfWords = 0
     
     var body: some View {
         NavigationView{
             List{
+//                Section{
+                HStack{
+                    Text("Total Score: \(score)")
+                        .fontWeight(.bold)
+                    Text("Number of Words: \(noOfWords)")
+                        .foregroundColor(.red)
+                        .fontWeight(.bold)
+                }
+//                }
                 Section{
                     TextField("Enter your Word...", text: $newWord)
                         .autocapitalization(.none)
@@ -32,6 +43,14 @@ struct ContentView: View {
                             Text(word)
                         }
                     }
+                }
+            }
+            .toolbar {
+                Button("New Word"){
+                    usedWords = [String]()
+                    startGame()
+                    score = 0
+                    noOfWords = 0
                 }
             }
             .navigationTitle(rootWord)
@@ -70,7 +89,13 @@ struct ContentView: View {
     }
     func addNewWord(){
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        guard answer.count > 0 else {
+        guard (answer.count >= 3 ) else {
+            wordError(title: "Small Word", msg: "Use some brains and enter a bigger word")
+            return
+        }
+        
+        guard (answer.count < 8) else {
+            wordError(title: "Same word", msg: "Dont enter the same word as the given word")
             return
         }
         
@@ -90,7 +115,29 @@ struct ContentView: View {
         }
         withAnimation {
             usedWords.insert(answer, at: 0)
-
+            if usedWords.count > 7 {
+                if (answer.count <= 4) {
+                    score += 3
+                    noOfWords += 1
+                } else if (answer.count <= 6) {
+                    score += 4
+                    noOfWords += 1
+                } else {
+                    score += 5
+                    noOfWords += 1
+                }
+            } else {
+                if (answer.count <= 4) {
+                    score += 1
+                    noOfWords += 1
+                } else if (answer.count <= 6) {
+                    score += 2
+                    noOfWords += 1
+                } else {
+                    score += 3
+                    noOfWords += 1
+                }
+            }
         }
         newWord = ""
     }
